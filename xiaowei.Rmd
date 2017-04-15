@@ -51,24 +51,36 @@ df = read.csv("Duke Data.csv")
 ```
 
 ```{r}
-df_win = df%>%
-  mutate(gameid=as.numeric(gameid))%>%
-  select(unique(gameid), season, wins, losses, venue)%>%
-  mutate(games=losses+wins)%>%
-  group_by(season)%>%
-  filter(venue=="Cameron Indoor Stadium")%>%
-  mutate(winning_homegame=wins/games)%>%
-  summarise(gameid, winning_homegame )%>%
-  arrange(season)
+df_home = df%>%
+  select(unique(gameid), season_game_info, wins_measure_copy_1, venue)%>%
+  na.omit()%>%
+  filter(venue == "Cameron Indoor Stadium")%>%
+  group_by(season_game_info)%>%
+  summarise(home = sum(wins_measure_copy_1)/n())%>%
+  arrange(season_game_info)
+
+df_nonhome = df%>%
+  select(unique(gameid), season_game_info, wins_measure_copy_1, venue)%>%
+  na.omit()%>%
+  filter(venue != "Cameron Indoor Stadium")%>%
+  group_by(season_game_info)%>%
+  summarise(non_home = sum(wins_measure_copy_1)/n())%>%
+  arrange(season_game_info)
+
+df_win=inner_join(df_home, df_nonhome)
+
+winning_percent_homegame = write.csv(df_win,"winning_percent_homegame.csv")
 ```
 
 ```{r}
 df_loc=df%>%
+  filter(city != " ")%>%
   select(unique(gameid), city, state, wins_measure_copy_1)%>%
   group_by(city, state)%>%
-  summarise(wins=sum(wins_measure_copy_1), win_percent=sum(wins_measure_copy_1)/n())%>%
-  filter(!is.na(city))
+  summarise(wins=sum(wins_measure_copy_1), win_percent=sum(wins_measure_copy_1)/n())
+  
+  
 
-wins_by_location = write.csv(df_loc, "wins_by_location")
+wins_by_location = write.csv(df_loc, "wins_by_location.csv")
 ```
 
