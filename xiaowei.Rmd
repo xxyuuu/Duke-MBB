@@ -64,18 +64,11 @@ df_win = df%>%
 
 ```{r}
 df_loc=df%>%
-  select(gameid, city, wins, losses, season)%>%
-  mutate(gameid=unique(gameid))%>%
-  group_by(city)%>%
-  summarise(gameid[1], winning_percent=wins/(wins+losses))
+  select(unique(gameid), city, state, wins_measure_copy_1)%>%
+  group_by(city, state)%>%
+  summarise(wins=sum(wins_measure_copy_1), win_percent=sum(wins_measure_copy_1)/n())%>%
+  filter(!is.na(city))
 
-df_loc=df%>%
-  select(gameid, city, wins, losses, season)%>%
-  group_by(city)%>%
-  summarise(gameid[1], winning_percent=wins/(wins+losses))
+wins_by_location = write.csv(df_loc, "wins_by_location")
 ```
 
-```{r}
-df_season=df%>%
-  select
-```
