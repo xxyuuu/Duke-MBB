@@ -1,0 +1,35 @@
+---
+title: "xiaowei"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(dplyr)
+```
+
+```{r}
+df = read.csv("Duke Data.csv")
+```
+
+```{r}
+df_win = df%>%
+  mutate(gameid=as.numeric(gameid))%>%
+  select(unique(gameid), season, wins, losses, venue)%>%
+  mutate(games=losses+wins)%>%
+  group_by(season)%>%
+  filter(venue=="Cameron Indoor Stadium")%>%
+  mutate(winning_homegame=wins/games)%>%
+  summarise(gameid, winning_homegame )%>%
+  arrange(season)
+```
+
+```{r}
+df_loc=df%>%
+  select(unique(gameid), city, wins, losses, season)%>%
+  mutate(winning_per=wins/(wins+losses))%>%
+  group_by(city)%>%
+  summarise(winning_per)
+```
