@@ -67,7 +67,16 @@ df_nonhome = df%>%
   summarise(non_home = sum(wins_measure_copy_1)/n())%>%
   arrange(season_game_info)
 
-df_win=inner_join(df_home, df_nonhome)
+df_all = df%>%
+  select(unique(gameid), season_game_info, wins_measure_copy_1, venue)%>%
+  na.omit()%>%
+  group_by(season_game_info)%>%
+  summarise(all = sum(wins_measure_copy_1)/n())%>%
+  arrange(season_game_info)
+
+
+df_seperate=inner_join(df_home, df_nonhome)
+df_win=inner_join(df_seperate,df_all)
 
 winning_percent_homegame = write.csv(df_win,"winning_percent_homegame.csv")
 ```
